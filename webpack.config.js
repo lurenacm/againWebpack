@@ -1,5 +1,6 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
     mode: 'development', // 打包的模式 开发环境和生产环境production
@@ -14,8 +15,10 @@ module.exports = {
         progress: true, // 打包过程中的进度条
         contentBase: './dist' // 打包后运行的文件夹
     },
+
     // plugin: 存放webpack的第三方插件
     plugins: [
+        // 包后的js文件，通过script导入 html 文件内
         new HtmlWebpackPlugin({
             template: './src/index.html', // template: 打包后放入的模板
             filename: 'index.html', // 这是模板打包后的文件名
@@ -24,6 +27,11 @@ module.exports = {
                 collapseWhitespace: true, // 将html文件的代码转换成一行。
             },
             hash: true, // 哈希戳，可以保证缓存的不同
+        }),
+
+        //  抽离出来的 css
+        new MiniCssExtractPlugin({
+            filename: 'main.css', // 抽离出来的 css 文件名是 main.js
         })
     ],
     module: {
@@ -31,7 +39,20 @@ module.exports = {
         rules: [ // 导入模块的规则
             {
                 test: /\.css$/,
-                use: ['style-loader', 'css-loader']
+                use: [
+                    MiniCssExtractPlugin.loader, // 将 css 文件抽离到`main.css` 中, 
+                    'css-loader',
+                    // 'postcss-loader'
+                ]
+            },
+            {
+                test: /\.less$/,
+                use: [
+                    MiniCssExtractPlugin.loader, // 将 less 文件抽离到`main.css` 中
+                    'css-loader',
+                    // 'postcss-loader',
+                    'less-loader',
+                ]
             }
         ]
     }

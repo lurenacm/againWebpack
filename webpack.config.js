@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
     mode: 'development', // 打包的模式 开发环境和生产环境production
-    entry: './src/index.js', // 打包的出口文件
+    entry: './src/base.png', // 打包的出口文件
     output: {
         filename: 'bundle[hash:8].js', // 打包后的文件名
         path: path.resolve(__dirname, 'dist') // 打包后文件夹存放的位置。
@@ -28,7 +28,6 @@ module.exports = {
             },
             hash: true, // 哈希戳，可以保证缓存的不同
         }),
-
         //  抽离出来的 css
         new MiniCssExtractPlugin({
             filename: 'main.css', // 抽离出来的 css 文件名是 main.js
@@ -36,7 +35,17 @@ module.exports = {
     ],
     module: {
         // 配置模块导入的规则
-        rules: [ // 导入模块的规则
+        rules: [{ // 导入模块的规则
+                test: /\.(jpg|png|gif)$/,
+                use: {
+                    loader: 'url-loader',
+                    options:{
+                        name:'[name]_[hash].[ext]',
+                        outputPath: 'images/',
+                        limit: 2048
+                    }
+                }
+            },
             {
                 test: /\.css$/,
                 use: [

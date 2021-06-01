@@ -2,6 +2,7 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
+const webpack = require('webpack')
 
 module.exports = {
     devtool:'source-map',
@@ -24,6 +25,7 @@ module.exports = {
 
     // plugin: 存放webpack的第三方插件
     plugins: [
+        new webpack.HotModuleReplacementPlugin(),
         // 包后的js文件，通过script导入 html 文件内
         new HtmlWebpackPlugin({
             template: './src/index.html', // template: 打包后放入的模板
@@ -43,7 +45,16 @@ module.exports = {
     ],
     module: {
         // 配置模块导入的规则
-        rules: [{ // 导入模块的规则
+        rules: [{
+            test: /\.m?js$/,
+            exclude: /node_modules/,
+            use: {
+              loader: "babel-loader",
+              options: {
+                presets: ['@babel/preset-env']  // presets 可以标识需要转换的源码使用了哪些新特性，
+              }
+            }
+          }, { // 导入模块的规则
                 test: /\.(jpg|png|gif)$/,
                 use: {
                     loader: 'url-loader',
@@ -79,4 +90,4 @@ module.exports = {
             // }
         ]
     }
-}
+}   

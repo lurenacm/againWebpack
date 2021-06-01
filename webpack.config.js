@@ -1,12 +1,18 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 
 module.exports = {
+    devtool:'source-map',
     mode: 'development', // 打包的模式 开发环境和生产环境production
-    entry: './src/base.png', // 打包的出口文件
+    entry: {    
+        main: './src/a.js',
+        sub: './src/index.js'
+    }, 
     output: {
-        filename: 'bundle[hash:8].js', // 打包后的文件名
+        // publicPath:'https://cdn.com/dist',
+        filename: '[name].js', // 打包后的文件名
         path: path.resolve(__dirname, 'dist') // 打包后文件夹存放的位置。
     },
     // webpack-dev-server 开发服务的配置
@@ -31,7 +37,9 @@ module.exports = {
         //  抽离出来的 css
         new MiniCssExtractPlugin({
             filename: 'main.css', // 抽离出来的 css 文件名是 main.js
-        })
+        }),
+
+        new CleanWebpackPlugin()
     ],
     module: {
         // 配置模块导入的规则
@@ -54,15 +62,21 @@ module.exports = {
                     // 'postcss-loader'
                 ]
             },
-            {
-                test: /\.less$/,
-                use: [
-                    MiniCssExtractPlugin.loader, // 将 less 文件抽离到`main.css` 中
-                    'css-loader',
-                    // 'postcss-loader',
-                    'less-loader',
-                ]
-            }
+            // {
+            //     test: /\.less$/,
+            //     use: [
+            //         MiniCssExtractPlugin.loader, // 将 less 文件抽离到`main.css` 中
+            //         {
+            //             loader: 'css-loader',
+            //             options: {
+            //                 importLoaders: 2,
+            //                 model: true    // 将css问价成为模块化，让文件之间不发生冲突
+            //             }
+            //         },
+            //         'postcss-loader',
+            //         'less-loader',
+            //     ]
+            // }
         ]
     }
 }

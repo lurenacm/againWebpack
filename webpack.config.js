@@ -20,7 +20,8 @@ module.exports = {
     devServer: {
         port: 3000, // 打开后的端口号
         progress: true, // 打包过程中的进度条
-        contentBase: './dist' // 打包后运行的文件夹
+        contentBase: './dist', // 打包后运行的文件夹
+        // open: true
     },
 
     // plugin: 存放webpack的第三方插件
@@ -43,6 +44,11 @@ module.exports = {
 
         new CleanWebpackPlugin()
     ],
+
+    // Tree Shaking 的配置项
+    optimization:{
+        useExports: true, // 被使用时才导入。
+    },
     module: {
         // 配置模块导入的规则
         rules: [{
@@ -50,9 +56,18 @@ module.exports = {
             exclude: /node_modules/,
             use: {
               loader: "babel-loader",
-              options: {
-                presets: ['@babel/preset-env']  // presets 可以标识需要转换的源码使用了哪些新特性，
-              }
+            //   options: {
+            //     presets: ['@babel/preset-env'],  // presets 可以标识需要转换的源码使用了哪些新特性，
+            //     "plugins": [
+            //         ["@babel/plugin-transform-runtime", {
+            //         "absoluteRuntime": false,
+            //         "corejs": false,
+            //         "helpers": true,
+            //         "regenerator": true,
+            //         "version": "7.0.0-beta.0"
+            //       }]
+            //       ]
+            //   }
             }
           }, { // 导入模块的规则
                 test: /\.(jpg|png|gif)$/,

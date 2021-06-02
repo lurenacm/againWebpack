@@ -1,0 +1,12 @@
+{
+    "presets": ["@babel/preset-env"],  // presets 可以标识需要转换的源码使用了哪些新特性，
+    "plugins": [
+        ["@babel/plugin-transform-runtime", {
+        "absoluteRuntime": false,
+        "corejs": false,
+        "helpers": true,
+        "regenerator": true,
+        "version": "7.0.0-beta.0"
+      }]
+      ]
+  }

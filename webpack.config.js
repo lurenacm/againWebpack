@@ -45,9 +45,9 @@ module.exports = {
         new CleanWebpackPlugin()
     ],
 
-    // Tree Shaking 的配置项
+    // tree shaking 的配置
     optimization:{
-        useExports: true, // 被使用时才导入。
+        useExports: true
     },
     module: {
         // 配置模块导入的规则

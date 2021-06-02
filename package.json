@@ -1,7 +1,9 @@
 {
   "name": "agin-webpack",
   "version": "1.0.0",
-  "sideEffects":["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -25,7 +27,8 @@
     "postcss-loader": "^5.3.0",
     "webpack": "^4.28.2",
     "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^3.11.2",
+    "webpack-merge": "^5.7.3"
   },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",

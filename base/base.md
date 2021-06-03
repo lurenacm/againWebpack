@@ -240,7 +240,7 @@ module:{
 
 ## Tree Shaking (webpack 优化)
 > Tree Shaking 在 webpack2.0 引入，为了解决导入模块时，不导入其他的函数。去掉了实际上并没有使用的代码来减少包的大小。
-* Tree Shaking 只支持 `ES module` 的引入，即`import from `，不支持 `commonJs` 的`require()`的导入，因为 Tree Shaking 只支持静态的映入方式。
+* Tree Shaking 只支持 `ES module` 的引入，即 `import from `，不支持 `commonJs` 的`require()`的导入，因为 Tree Shaking 只支持静态的映入方式。
 * Tree Shaking 开发环境`mode: production`下的的基本配置，同时还需要在 `package.json` 配置 `"sideEffects":false,`，`sideEffects:['a.css', 'b.css']` 可以在 `tree shaking` 打包的环境下忽略掉某个文件，在 webpack 打包的情况下都会去按照 `Tree Shaking` 的方式打包。
 ``` js
 //
@@ -263,11 +263,10 @@ module.exports = {
 
 
 
-
 ## webpack优化之 Code Splitting(代码分割)
 > `Code Splitting` 代码分割 `允许只加载我们修改过的代码`，而不是修改部分代码后全部加载所有文件。
 * `Code Splitting` 不是 `webpack` 独有的，原本就有的概念。
-* `webpack` 内置了插件实现代码分割的逻辑，`webpack` 中的代码分割分为同步和异步。
+* `webpack` 内置了插件`splitChunk`实现代码分割的逻辑，`webpack` 中的代码分割分为同步和异步。
 * 同步代码分割，只需要要`optimizations` 中配置`splitChunks`。
 * 异步的代码分割，针对于 `import` 导入，不需要做任何的配置，代码会自动分割
 ``` js
@@ -281,12 +280,10 @@ module.exports = {
     }
 }
 ```
-
-
-
-
-
 [Webpack 大法之 Code Splitting](https://zhuanlan.zhihu.com/p/26710831)
+
+
+
 
 ## 文献
 [当面试官问Webpack的时候他想知道什么](https://juejin.cn/post/6943468761575849992#heading-0)

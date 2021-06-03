@@ -1,16 +1,18 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const {CleanWebpackPlugin} = require('clean-webpack-plugin')
+const {
+    CleanWebpackPlugin
+} = require('clean-webpack-plugin')
 const webpack = require('webpack')
 
 module.exports = {
-    devtool:'source-map',
+    devtool: 'source-map',
     mode: 'development', // 打包的模式 开发环境和生产环境production
-    entry: {    
+    entry: {
         main: './src/a.js',
         sub: './src/index.js'
-    }, 
+    },
     output: {
         // publicPath:'https://cdn.com/dist',
         filename: '[name].js', // 打包后的文件名
@@ -45,36 +47,41 @@ module.exports = {
         new CleanWebpackPlugin()
     ],
 
-    // tree shaking 的配置
-    optimization:{
-        useExports: true
+    // development tree shaking 的配置
+    optimization: {
+        usedExports: true,
+        
+        // 代码分割的配置项
+        splitChunks: {
+            chunks: "all"
+        }
     },
     module: {
         // 配置模块导入的规则
         rules: [{
-            test: /\.m?js$/,
-            exclude: /node_modules/,
-            use: {
-              loader: "babel-loader",
-            //   options: {
-            //     presets: ['@babel/preset-env'],  // presets 可以标识需要转换的源码使用了哪些新特性，
-            //     "plugins": [
-            //         ["@babel/plugin-transform-runtime", {
-            //         "absoluteRuntime": false,
-            //         "corejs": false,
-            //         "helpers": true,
-            //         "regenerator": true,
-            //         "version": "7.0.0-beta.0"
-            //       }]
-            //       ]
-            //   }
-            }
-          }, { // 导入模块的规则
+                test: /\.m?js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: "babel-loader",
+                    //   options: {
+                    //     presets: ['@babel/preset-env'],  // presets 可以标识需要转换的源码使用了哪些新特性，
+                    //     "plugins": [
+                    //         ["@babel/plugin-transform-runtime", {
+                    //         "absoluteRuntime": false,
+                    //         "corejs": false,
+                    //         "helpers": true,
+                    //         "regenerator": true,
+                    //         "version": "7.0.0-beta.0"
+                    //       }]
+                    //       ]
+                    //   }
+                }
+            }, { // 导入模块的规则
                 test: /\.(jpg|png|gif)$/,
                 use: {
                     loader: 'url-loader',
-                    options:{
-                        name:'[name]_[hash].[ext]',
+                    options: {
+                        name: '[name]_[hash].[ext]',
                         outputPath: 'images/',
                         limit: 2048
                     }
@@ -105,4 +112,4 @@ module.exports = {
             // }
         ]
     }
-}   
+}

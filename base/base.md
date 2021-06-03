@@ -41,11 +41,13 @@ output:{
 * 打包后的文件名 `filename` 属性具备多个占位符，`hash, name`。
 * `path: path.resolve(__dirname, 'dist')`，打包后文件的存放位置
 * `publicPath`，配置打包后的公共路径。
+* `library`： 可以将模块导出的值赋予给一个全局的变量。
 * output 还有很多的配置项
 ``` js
 output: {
     filename: 'bundle[hash:8].js', // 打包后的文件名
     path: path.resolve(__dirname, 'dist') // 打包后文件夹存放的位置。
+    library: 'res'
 },
 ```
 
@@ -159,6 +161,24 @@ devtool:'cheap-module-eval-source-map',// 速度更快一些，开发环境下�
 devtool:'cheap-module-source-map',// 速度更快一些，生产环境下使用
 ```
 
+## 9. webpack 之 resolve
+> `webpack` 启动后会在 `entry` 入口模块处找到所有依赖的文件，而`resolve`就是来约定好，如何找模块的文件的。这个配置项能够很好的筛选入口文件中的某些文件。
+* 属性 `extensions:['.js', '.json']`  就是在入口文件夹中找以`.js, .json`的文件
+* 属性 alias 别名，也可以为导入的模块一别名
+``` js
+module.exports = {
+    entry:'./src',
+    resolve:{
+        extensions:['.js', '.json'],
+        alias: {
+            componentA: './src/components/'
+        }
+    }
+}
+```
+> 这个属性不能滥用，对于图片文件，可以不使用这个配置项，因为都有可能图片。
+
+
 ## (重点) webpack 中的热更新原理 Hot Module Replacement 
 > HMR 允许在运行时添加，删除，替换各个模块，而不需要重新刷新整个页面。
 * `HMR`核心： 就是客服端从服务端获取更新后的文件。实际上就是本地的 `WDS(webpack-dev-server)` 和浏览器之间维护了一个 `Websocket`，当本地的资源发生变化时 `WDS` 会带上 `hash` 向浏览器推送更新，让浏览器和上次的资源对比。浏览器(客服端)对比差异后，向 `WDS` 发送 `ajax` 请求获取新的资源。实现热更新。
@@ -213,7 +233,7 @@ module:{
 ## webpack 常用插件
 ### 静态资源图片插件
 * `file-loader`: 提供很多的占位符，直接看官网文档
-* `url-loader`: 和`file-loader`相似，可以分类图片的打包大小
+* `url-loader`: 和 `file-loader` 相似，可以打包不同的图片
 
 
 
@@ -264,7 +284,8 @@ module.exports = {
 
 
 ## webpack优化之 Code Splitting(代码分割)
-> `Code Splitting` 代码分割 `允许只加载我们修改过的代码`，而不是修改部分代码后全部加载所有文件。
+[webpack 中实现的 code splitting](https://www.cnblogs.com/floor/p/10788304.html)
+> `Code Splitting` 代码分割，把所有代码分成一块一块(chunk)，需要某块代码的时候再去加载它。 `允许只加载我们修改过的代码`，而不是修改部分代码后全部加载所有文件。
 * `Code Splitting` 不是 `webpack` 独有的，原本就有的概念。
 * `webpack` 内置了插件`splitChunk`实现代码分割的逻辑，`webpack` 中的代码分割分为同步和异步。
 * 同步代码分割，只需要要`optimizations` 中配置`splitChunks`。

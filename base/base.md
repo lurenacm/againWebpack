@@ -114,7 +114,7 @@ plugins: [
 ### 6.modules
 * `modules`: 配置模块的 `loader` 用于将模块 `require()` 导入到打包的文件。属性 `rules 数组` 可以定义模块的 `loader`
 * `test` 是正则表达式，用于匹配文件的后缀名
-* `use` 可以是一个数组也可以是一个对象，对象的形式可以传入其他的配置如`options`，数组形式用于存放多个 `loader`。
+* `use` 可以是一个数组也可以是一个对象，对象的形式可以传入其他的配置如 `options`，数组形式用于存放多个 `loader`。
 
 ``` js
 module: {
@@ -237,7 +237,7 @@ module:{
 
 
 
-### html 插件
+### html 
 > 将打包后的js文件，放入到 `html` 文件中，这个插件主要是针对的是 `html` 文件。
 * `npm i html-webpack-plugin` 将打包后的文件放入到 `html` 文件内
 * `template: 打包后放入的模板路劲`。
@@ -246,7 +246,7 @@ module:{
 * `hash`: 哈希戳。防止打包后的文件发生覆盖。保证产生的是不同的缓存。也可以在打包的出口文件处加上`[hash:8]` 生成不同的打包文件。
 > 最终的效果在 `html` 文件内有 `<script src=bundle8f33b531.js?**8f33b5319c229ecfbf99**></script>`
 
-### CSS 样式的插件
+### CSS 样式的loader和插件
 > CSS文件引入到 `html` 模板文件内不会一起打包，因为 `html` 模板内的代码不会变化，也就不会将 CSS 文件打包，可以通过 `require()` 导入 css 文件结合 `webpack` 配置项 `module` 模块中的loader配置。 
 * 插件：`css-loader` 用于解析 `@import` 语法，内置多个配置项`model: true` 将css文件成为模块化
 * 插件：`style-loader`: 把解析打包后的文件插入到 `head` 标签中。
@@ -303,6 +303,13 @@ module.exports = {
 ```
 [Webpack 大法之 Code Splitting](https://zhuanlan.zhihu.com/p/26710831)
 
+2.那你再说一说Loader和Plugin的区别？
+
+Loader 本质就是一个函数，在该函数中对接收到的内容进行转换，返回转换后的结果。
+因为 Webpack 只认识 JavaScript，所以 Loader 就成了翻译官，对其他类型的资源进行转译的预处理工作。
+Plugin 就是插件，基于事件流框架 Tapable，插件可以扩展 Webpack 的功能，在 Webpack 运行的生命周期中会广播出许多事件，Plugin 可以监听这些事件，在合适的时机通过 Webpack 提供的 API 改变输出结果。
+Loader 在 module.rules 中配置，作为模块的解析规则，类型为数组。每一项都是一个 Object，内部包含了 test(类型文件)、loader、options (参数)等属性。
+Plugin 在 plugins 中单独配置，类型为数组，每一项是一个 Plugin 的实例，参数都通过构造函数传入。
 
 
 

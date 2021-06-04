@@ -85,7 +85,7 @@ devServer: {
 ### 5. plugins
 * `plugins`: 数组。用于存放安装的插件。
 * 导入的插件都需要 `new` 实例化。
-* 常见的插件`HtmlWebpackPlugin`，会在打包后自动生成一个`html`文件，并且会将打包后的 js 文件引入到`html` 文件内
+* 常见的插件 `HtmlWebpackPlugin`，会在打包后自动生成一个`html`文件，并且会将打包后的 js 文件引入到`html` 文件内
 * `c`，打包之前把已经打包的文件删除。
 ``` js
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -248,11 +248,11 @@ module:{
 
 ### CSS 样式的loader和插件
 > CSS文件引入到 `html` 模板文件内不会一起打包，因为 `html` 模板内的代码不会变化，也就不会将 CSS 文件打包，可以通过 `require()` 导入 css 文件结合 `webpack` 配置项 `module` 模块中的loader配置。 
-* 插件：`css-loader` 用于解析 `@import` 语法，内置多个配置项`model: true` 将css文件成为模块化
-* 插件：`style-loader`: 把解析打包后的文件插入到 `head` 标签中。
-* 插件：`less-loader`,将 less 语法转换成 css。
-* 插件：`mini-css-extract-plugin`，将写入 `style` 标签内的 css 抽离成一个 `link` 导入 CSS 文件，`MiniCssExtractPlugin.loader` 可以将抽离文件都导入到一个文件内
-* 插件：`postcss-loader`，用来给 css 样式做浏览器前缀 `webkit` 的配置
+* `css-loader` 用于解析 `@import` 语法，内置多个配置项`model: true` 将css文件成为模块化
+* `style-loader`: 把解析打包后的文件插入到 `head` 标签中。
+* `less-loader`,将 less 语法转换成 css。
+* `postcss-loader`，用来给 css 样式做浏览器前缀 `webkit` 的配置
+* 插件：`mini-css-extract-plugin`，将写入 `style` 标签内的 css 抽离成一个 用 `link` 导入 生成的 CSS 文件，`MiniCssExtractPlugin.loader` 可以将抽离文件都导入到一个文件内
 * 插件：`optimize-css-assets-webpack-plugin` 对CSS 代码进行压缩。
 
 ### JS 插件

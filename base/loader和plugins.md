@@ -170,16 +170,9 @@ module.export = MyPlugin
 
 > 1. 编写一个 `JavaScript` 命名函数。
 > 2. 在它的原型上定义一个 `apply` 方法。
-> 3. 在应用方法`apply()`中指定挂载的 `webpack` 事件钩子`complier.hooks.`。
+> 3. 在应用方法 `apply()` 中指定挂载的 `webpack` 事件钩子`complier.hooks.`。
 > 4. 处理 `webpack` 内部实例的特定数据。
 > 5. 功能完成后调用 `webpack` 提供的回调。
-
-
-compiler 暴露了和 Webpack 整个生命周期相关的钩子。compilation 暴露了与模块和依赖有关的粒度更小的事件钩子插件需要在其原型上绑定 apply 方法，才能访问 compiler 实例传给每个插件的 compiler 和 compilation 对象都是同一个引用，若在一个插件中修改了它们身上的属性，会影响后面的插件找出合适的事件点去完成想要的功能
-
-emit 事件发生时，可以读取到最终输出的资源、代码块、模块及其依赖，并进行修改(emit 事件是修改 Webpack 输出资源的最后时机)watch-run 当依赖的文件发生变化时会触发
-异步的事件需要在插件处理完任务时调用回调函数通知 Webpack 进入下一个流程，不然会卡住
-
 
 
 ## 四、思考

@@ -259,9 +259,9 @@ module:{
 
 
 ## Tree Shaking (webpack 优化)
-> Tree Shaking 在 webpack2.0 引入，为了解决导入模块时，不导入其他的函数。去掉了实际上并没有使用的代码来减少包的大小。
+> Tree Shaking 在 webpack2.0 引入，为了解决导入模块时，不导入没有使用到的函数。去掉了实际上并没有使用的代码来减少包的大小。
 * Tree Shaking 只支持 `ES module` 的引入，即 `import from `，不支持 `commonJs` 的`require()`的导入，因为 Tree Shaking 只支持静态的映入方式。
-* Tree Shaking 开发环境`mode: production`下的的基本配置，同时还需要在 `package.json` 配置 `"sideEffects":false,`，`sideEffects:['a.css', 'b.css']` 可以在 `tree shaking` 打包的环境下忽略掉某个文件，在 webpack 打包的情况下都会去按照 `Tree Shaking` 的方式打包。
+* Tree Shaking 开发环境 `mode: production` 下的的基本配置，同时还需要在 `package.json` 配置 `"sideEffects":false,`，`sideEffects:['a.css', 'b.css']` 可以在 `tree shaking` 打包的环境下忽略掉某个文件，在 webpack 打包的情况下都会去按照 `Tree Shaking` 的方式打包。
 ``` js
 //
 module.exports = {
@@ -316,6 +316,6 @@ Plugin 在 plugins 中单独配置，类型为数组，每一项是一个 Plugin
 ## 文献
 [当面试官问Webpack的时候他想知道什么](https://juejin.cn/post/6943468761575849992#heading-0)
 [「吐血整理」再来一打Webpack面试题](https://juejin.cn/post/6844904094281236487#heading-0)
-
+[webpack 面试题](https://juejin.cn/post/6844904094281236487#heading-3webpack面试题)
 
 

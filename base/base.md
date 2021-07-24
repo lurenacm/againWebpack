@@ -37,6 +37,25 @@ output:{
 }
 ```
 
+## 9. webpack 之 resolve
+> `webpack` 启动后会在 `entry` 入口模块处找到所有依赖的文件，而 `resolve` 就是来约定好，如何找模块的文件的。这个配置项能够很好的筛选入口文件中的某些文件。
+* 属性 `extensions:['.js', '.json']`  就是在入口文件夹中找以 `.js, .json` 的文件
+* 属性 alias 别名，也可以为导入的模块一别名
+``` js
+module.exports = {
+    entry:'./src',
+    resolve:{
+        extensions:['.js', '.json'],
+        alias: {
+            componentA: './src/components/'
+        }
+    }
+}
+```
+> 这个属性不能滥用，对于图片文件，可以不使用这个配置项，因为都有可能图片。
+总结：resolve 属性用于筛选入口文件的配置项 entry，比如 extensions 属性就是用于筛选入口文件中匹配道的文件名后缀的。
+
+
 ### 2. output
 * `output`：打包好后的文件出口，可以定义文件名 `filename`，`path` 打包后文件存放的位置路径，这个路径必须是一个绝对路径，可以使用 `path.resolve(__dirname, 'dist')` 在当前目录下产生一个`dist`目录。
 * 打包后的文件名 `filename` 属性具备多个占位符，`hash, name`。
@@ -83,7 +102,12 @@ devServer: {
 }
 ```
 devServer 配置项会在本地打开一个本地服务，devServer 是基于 webpack 提供的 webpack-dev-server 包实现的。
-devServer：属性，port端口号，contentBase，运行打包后的文件夹。提供的热更新属性 hot，提供的代理配置 proxy
+devServer：属性，port端口号，contentBase，运行打包后的文件夹。提供的热更新属性 hot，提供的代理配置 proxy。
+
+
+#### devServer 中的热更新原理
+> 在 vue 中提供的 vue-loader 内部实现了 `module.hot.access`，不需要我们自己添加
+总结：Hot modules replacement 热更新原理是指在运行时可以替换、删除、修改模块，但是不用刷新页面。原因是在于，每一项目构建时文件都会生成一个 hash 值，这个hash值热更新的标识，当文件资源被修改后会生成一个新的 hash 值，浏览器和本地的webpack-dev-Server之前形成一个 websocket 的协议，资源被修改后我们的 webpack-dev-server 会携带 hash值 向浏览器推送，浏览器对比hash值存在差异后，会向WDS发送请求获取新得资源，实现热更新
 
 
 ### 5. plugins
@@ -112,15 +136,16 @@ plugins: [
     new MiniCssExtractPlugin({
         filename: 'main.css', // 抽离出来的 css 文件名是 main.js
     })
-],
+]
 ```
 
 
 ### 6.modules
 * `modules`: 配置模块的 `loader` 用于将模块 `require()` 导入到打包的文件。loader 是用于处理不同文件名规则的处理器
 * 属性 `rules 数组` 可以给 `loader`，定义对应的匹配规则
-* `test` 是正则表达式，用于匹配文件的后缀名
+* `test` 是正则表达式，用于匹配文件的后缀名 /\.js$/
 * `use` 可以是一个数组也可以是一个对象，对象的形式可以传入其他的配置如 `options`，数组形式用于存放多个 `loader`。
+> url-loader 和 file-loader 一致都可以是将文件发送到输出文件夹中，后放回一个相对路径。url-loader：但是在文件大小（单位byte）低于指定的限制时，可以返回一个DataURL。
 ``` js
 module: {
     // 配置模块导入的规则
@@ -128,7 +153,7 @@ module: {
         {
             test: '/\.(jpg|png|gif)$/',
             use: [
-                loader: `file-loader`,
+                loader: `file-loader`, // 将文件发送到输出文件夹，并返回（相对）URL
                 options:{
                     name:'[name].[ext]'
                 }
@@ -145,17 +170,18 @@ module: {
     ]
 }
 ```
-> 总结 modules 属性是用于配置 loader 的模块，rules 数组属性用于配置每一个loader的使用，比如匹配项 test，匹配后使用 use 属性使用loader，还可以在 use 属性中添加其他参数 options 匹配
+> 总结 modules 属性是用于配置 loader 的模块，rules 数组属性用于配置每一个loader的使用，比如匹配项 test，匹配后使用 use 属性使用 loader，还可以在 use 属性中添加其他参数 options 匹配
+
 
 ### 7. loader 
-* `loader`: Loader 就是一个文件的打包方案， webpack 不能直接识别非js文件结尾的文件，需要借助外部的帮助 `loader` 实现，`loader` 的特点是具备单一性，可以多个 `loader` 组合使用.
+* `loader`: Loader 就是一个文件的打包方案， webpack 不能直接识别非 js 文件结尾的文件，需要借助外部的帮助 `loader` 实现，`loader` 的特点是具备单一性，可以多个 `loader` 组合使用。
 * `loader`的执行顺序是从右向左，从下到上。`rules` 数组 `use` 中的 `loader` 可以是一个对象能传入额外的配置项 `options`，也可以是一个数组里面同样也可以是一个对象
 
 
 ### 8.sourceMap 映射
 > sourceMap 可以将编译，打包，压缩后的文件映射回源代码中。
-* `sourceMap` 的配置项都是在 `devtool` 中配置
-* `sourceMap` 对于打包后报错的文件提示和友好
+* `sourceMap` 的配置项都是在 `devtool` 中配置。
+* `sourceMap` 对于打包后报错的文件提示和友好。
 ``` js
 // webpack.config.js 
 devtool:'source-map', //报错信息准确精确到字符，会产生.map文件，速度慢
@@ -169,32 +195,14 @@ devtool:'cheap-module-source-map',// 速度更快一些，生产环境下使用
 > 总结 source-map 可以将打包后的文件映射回源文件，对报错提示很友好，线上的开发环境采用`devtool: cheap-module-eval-source-map;` 线下采用：cheap-module-source-map。
 
 
-## 9. webpack 之 resolve
-> `webpack` 启动后会在 `entry` 入口模块处找到所有依赖的文件，而`resolve`就是来约定好，如何找模块的文件的。这个配置项能够很好的筛选入口文件中的某些文件。
-* 属性 `extensions:['.js', '.json']`  就是在入口文件夹中找以`.js, .json`的文件
-* 属性 alias 别名，也可以为导入的模块一别名
-``` js
-module.exports = {
-    entry:'./src',
-    resolve:{
-        extensions:['.js', '.json'],
-        alias: {
-            componentA: './src/components/'
-        }
-    }
-}
-```
-> 这个属性不能滥用，对于图片文件，可以不使用这个配置项，因为都有可能图片。
-总结：resolve 属性用于筛选入口文件的配置项 entry，比如 extensions 属性就是用于筛选入口文件中匹配道的文件名后缀的。
-
 
 ## (重点) webpack 中的热更新原理 Hot Module Replacement 
 > HMR 允许在运行时添加，删除，替换各个模块，而不需要重新刷新整个页面。
-* `HMR`核心： 就是客服端从服务端获取更新后的文件。实际上就是本地的 `WDS(webpack-dev-server)` 和浏览器之间维护了一个 `Websocket`，每次项目构建打包时都会产生一个 Hash 值，这个 hash 值就是热更新的标识，当本地的资源发生变化时 `WDS` 会带上 `hash` 向浏览器推送更新，让浏览器 hash 值做对比。浏览器(客服端)对比存在差异后，浏览器向 `WDS` 发送 `ajax` 请求获取新的资源。实现热更新。
-* 配置 `hot 和 hotOnly` 同时引入插件`webpack`，还需要在导出的出口文件中配置额外代码，让不同模块的文件互不干扰。
+* `HMR`核心： 就是客服端从服务端获取更新后的文件。实际上就是本地的 `WDS(webpack-dev-server)` 和浏览器之间维护了一个 `Websocket`，每次项目构建打包时都会产生一个 Hash 值，这个 hash 值就是热更新的标识，当本地的资源发生变化时 `WDS` 会带上 `hash` 向浏览器推送更新，浏览器将 hash 值做对比。浏览器(客服端)对比存在差异后，浏览器向 `WDS` 发送 `ajax` 请求获取新的资源。实现热更新。
+* 配置 `hot 和 hotOnly` 同时引入插件 `webpack`，还需要在导出的出口文件中配置额外代码，让不同模块的文件互不干扰。
 ``` js
 // /src/index.js
-if(module.hot){
+if(module.hot) {
     // 监控模块的变化，变化后执行回调函数
     module.hot.access('moduleA', () => {})
     module.hot.access('moduleB', () => {})
@@ -214,14 +222,13 @@ module.exports = {
 }
 ```
 > 在 vue 中提供的 vue-loader 内部实现了 `module.hot.access`，不需要我们自己添加
-总结：Hot modules replacement 热更新原理是指在运行时可以替换、删除、修改模块，但是不用刷新页面。原因是在于，每一项目构建时文件都会生成一个 hash 值，这个hash值热更新的标识，当文件资源被修改后会生成一个新的 hash 值，浏览器和本地的webpack-dev-Server之前形成一个 websocket 的协议，资源被修改后我们的 webpack-dev-server 会携带 hash值 向浏览器推送，浏览器对比hash值存在差异后，会向WDS发送请求获取新得资源，实现热更新
+总结：Hot modules replacement 热更新原理是指在运行时可以替换、删除、修改模块，但是不用刷新页面。原因是在于，每一项目构建时文件都会生成一个 hash 值，这个hash值热更新的标识，当文件资源被修改后会生成一个新的 hash 值，浏览器和本地的webpack-dev-Server之前形成一个 websocket 的协议，资源被修改后我们的 webpack-dev-server 会携带 hash值 向浏览器推送，浏览器对比hash值存在差异后，会向 WDS 发送请求获取新得资源，实现热更新
 
 
 ## (重点) babel原理 ES6 转化成 ES5
 > 使用 babel 兼容浏览器环境
 * 安装 `npm install --save-dev babel-loader @babel/core`，添加 babel 的 loader。
 * 除了添加 babel 之外还需要添加 `polyfill` 给浏览器补充不支持的语法。`npm install --save @babel/polyfill`，但是 `polyfill` 可能会导致变量的全局污染
-
 ``` js
 module: {
     rules: [{
@@ -239,6 +246,7 @@ module: {
 }
 ```
 
+
 ## webpack 常用插件
 ### 静态资源图片插件
 * `file-loader`: 提供很多的占位符，直接看官网文档
@@ -248,11 +256,12 @@ module: {
 ### html 
 > 将打包后的js文件，放入到 `html` 文件中，这个插件主要是针对的是 `html` 文件。
 * `npm i html-webpack-plugin` 将打包后的文件放入到 `html` 文件内
-* `template: 打包后放入的模板路劲`。
+* `template: 打包后放入的模板路径`。
 * `filename`: 模板打包后的文件名。
 * `minify`: 对象，最小化操作，将打包后 `html` 文件也压缩，`removeAttributeQuotes: true` 将 html 文件内的双引号去除。`collapseWhitespace: true, 将html文件的代码转换成一行`。
 * `hash`: 哈希戳。防止打包后的文件发生覆盖。保证产生的是不同的缓存。也可以在打包的出口文件处加上`[hash:8]` 生成不同的打包文件。
 > 最终的效果在 `html` 文件内有 `<script src=bundle8f33b531.js?**8f33b5319c229ecfbf99**></script>`
+
 
 ### CSS 样式的loader和插件
 > CSS文件引入到 `html` 模板文件内不会一起打包，因为 `html` 模板内的代码不会变化，也就不会将 CSS 文件打包，可以通过 `require()` 导入 css 文件结合 `webpack` 配置项 `module` 模块中的loader配置。 
@@ -269,10 +278,9 @@ module: {
 
 ## Tree Shaking (webpack 优化)
 > Tree Shaking 在 webpack2.0 引入，为了解决导入模块时，不导入没有使用到的函数。去掉了实际上并没有使用的代码来减少包的大小。
-* Tree Shaking 只支持 `ES module` 的引入，即 `import from `，不支持 `commonJs` 的`require()`的导入，因为 Tree Shaking 只支持静态的引入方式。
+* Tree Shaking 只支持 `ES module` 的引入，即 `import from `，不支持 `commonJs` 的 `require()`的导入，因为 Tree Shaking 只支持静态的引入方式。
 * Tree Shaking 开发环境 `mode: production` 下的的基本配置，同时还需要在 `package.json` 配置 `"sideEffects":false,`，`sideEffects:['a.css', 'b.css']` 可以在 `tree shaking` 打包的环境下忽略掉某个文件，在 webpack 打包的情况下都会去按照 `Tree Shaking` 的方式打包。
 ``` js
-//
 module.exports = {
     mode: 'development',
     // development tree shaking 的配置
@@ -284,20 +292,18 @@ module.exports = {
 * 没有导出的函数都会被 `Tree Shaking` 忽略掉 
 
 
-### 思考： 你觉得 CommonJS 为什么不能做 Tree-Shaking ?
+### 思考：你觉得 CommonJS 为什么不能做 Tree-Shaking?
 > 答：因为 `CommonJS` 是动态的引入方式，`ES module` 内部是静态的引入方式
 
 
 ### 思考：写过 loader 和 plugin 吗？(实话实说，没有)那你知道两者有什么差异吗？(先loader后plugin)
-
-
 
 ## webpack优化之 Code Splitting(代码分割)
 [webpack 中实现的 code splitting](https://www.cnblogs.com/floor/p/10788304.html)
 > `Code Splitting` 代码分割，把所有代码分成一块一块(chunk)，需要某块代码的时候再去加载它。 `允许只加载我们修改过的代码`，而不是修改部分代码后全部加载所有文件。
 * `Code Splitting` 不是 `webpack` 独有的，原本就有的概念。
 * `webpack` 内置了插件`splitChunk`实现代码分割的逻辑，`webpack` 中的代码分割分为同步和异步。
-* 同步代码分割，只需要要`optimizations` 中配置`splitChunks`。
+* 同步代码分割，只需要要 `optimizations` 中配置 `splitChunks`。
 * 异步的代码分割，针对于 `import` 导入，不需要做任何的配置，代码会自动分割
 ``` js
 // webpack.config.js 同步代码分割

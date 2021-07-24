@@ -56,7 +56,7 @@ module.exports = {
             chunks: "all"
         }
     },
-    module: {
+    modules: {
         // 配置模块导入的规则
         rules: [{
                 test: /\.m?js$/,

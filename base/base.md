@@ -21,7 +21,7 @@
 ## webpack.config.js 配置基本概念
 > webpack 可以0配置，但是配置很弱，需要我们手动配置。webpack.config.js 就是 webpack的配置文件。
 ### 1. entry
-* `entry`：要打包文件的入口(路径)。打包多个文件用对象形式表示，同时 `output` 的 `filename` 属性要使用占位符表示`entry` 打包输出的`key`。
+* `entry`：要打包文件的入口(路径)。打包多个文件用对象形式表示，同时 `output` 的 `filename` 属性使用占位符表示 `entry` 打包输出的 `key`。
 ``` js
 entry: './src/index.js', // 打包的出口文件
 
@@ -30,6 +30,7 @@ entry:{
     main: './src/index.js',
     sub: './src/index.js'
 }
+
 // 对于
 output:{
     filename:'[name].js', //对应上面的 hash 和 name。
@@ -54,23 +55,23 @@ output: {
 ### 3.mode
 * `mode`: 模式，打包后的环境可以是 `production`，`development`，`production` 环境下的代码会被压缩。
 ``` js
-mode: 'development', // 打包的模式 开发环境和生产环境production
+mode: 'development', // 打包的模式 开发环境和生产环境 production
 ```
 
+
 #### mode 下的 production 生产环境 和 development 开发环境的区别
-* `development` 不压缩代码，具备准确的 `source map: cheap-module-eval-source-map`，
+* `development` 不压缩代码，具备准确的 `devtool: source map: cheap-module-eval-source-map`。
 * `production` 压缩代码，简单点的 `source map: cheap-module-source-map`，本地服务的`devServer` 也不需要使用，`Tree Shaking` 配置的 `optimization` 也可以不需要使用，热更新模块也可以不需要再使用
 > 可以同时创建两个不同环境下的`webpack`配置。再创建一个`webpack.common.js`文件，将两个环境下的共同的代码分离。最后使用`webpack-merge`合并`common.js`和另外两个文件。
 
 
-
-### 4. devServer 本地服务 
-> webpack 中的配置项 devServer 就是基于 webpack 提供的一个包`webpack-dev-server(WDS)`来实现的
+### 4. devServer 本地服务
+> webpack 中的配置项 devServer 就是基于 webpack 提供的一个包 `webpack-dev-server(WDS)`来实现的
 * `devServer:` 配置 `webpack-dev-server` 提供的本地服务信息
 * 属性 `contentBase`: 打开后运行的文件；`open`: 自动打开一个页面
 * 提供本地端口号，无需刷新页面，保存即可。
-* `proxy`: 可以提供代理连接`proxy:{'apiUrl: https://xxx.html'}`
-* devServer 还提供热更新模块，`hot`
+* `proxy`: 可以提供代理连接 `proxy:{'apiUrl: https://xxx.html'}`
+* devServer 还提供热更新模块，`hot` 
 > 对比 `watch: webpack --watch`，`devServer` 不需要刷新页面同时提供本地端口号。
 ``` js
 devServer: {
@@ -79,13 +80,16 @@ devServer: {
     contentBase: './dist', // 打包后运行的文件夹
     hot: true,  // hot
     hotOnly: true
-},
+}
 ```
+devServer 配置项会在本地打开一个本地服务，devServer 是基于 webpack 提供的 webpack-dev-server 包实现的。
+devServer：属性，port端口号，contentBase，运行打包后的文件夹。提供的热更新属性 hot，提供的代理配置 proxy
+
 
 ### 5. plugins
 * `plugins`: 数组。用于存放安装的插件。
 * 导入的插件都需要 `new` 实例化。
-* 常见的插件 `HtmlWebpackPlugin`，会在打包后自动生成一个`html`文件，并且会将打包后的 js 文件引入到`html` 文件内
+* 常见的插件 `HtmlWebpackPlugin`，会在打包后自动生成一个 `html` 文件，并且会将打包后的 js 文件引入到 `html` 文件内
 * `c`，打包之前把已经打包的文件删除。
 ``` js
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -111,11 +115,12 @@ plugins: [
 ],
 ```
 
+
 ### 6.modules
-* `modules`: 配置模块的 `loader` 用于将模块 `require()` 导入到打包的文件。属性 `rules 数组` 可以定义模块的 `loader`
+* `modules`: 配置模块的 `loader` 用于将模块 `require()` 导入到打包的文件。loader 是用于处理不同文件名规则的处理器
+* 属性 `rules 数组` 可以给 `loader`，定义对应的匹配规则
 * `test` 是正则表达式，用于匹配文件的后缀名
 * `use` 可以是一个数组也可以是一个对象，对象的形式可以传入其他的配置如 `options`，数组形式用于存放多个 `loader`。
-
 ``` js
 module: {
     // 配置模块导入的规则
@@ -140,15 +145,16 @@ module: {
     ]
 }
 ```
+> 总结 modules 属性是用于配置 loader 的模块，rules 数组属性用于配置每一个loader的使用，比如匹配项 test，匹配后使用 use 属性使用loader，还可以在 use 属性中添加其他参数 options 匹配
 
 ### 7. loader 
-* `loader`: Loader 就是一个打包的方案， webpack 不能直接识别非js文件结尾的文件，需要借助外部的帮助 `loader` 实现，`loader` 的特点是具备单一性，可以多个 `loader` 组合使用.
+* `loader`: Loader 就是一个文件的打包方案， webpack 不能直接识别非js文件结尾的文件，需要借助外部的帮助 `loader` 实现，`loader` 的特点是具备单一性，可以多个 `loader` 组合使用.
 * `loader`的执行顺序是从右向左，从下到上。`rules` 数组 `use` 中的 `loader` 可以是一个对象能传入额外的配置项 `options`，也可以是一个数组里面同样也可以是一个对象
 
 
 ### 8.sourceMap 映射
 > sourceMap 可以将编译，打包，压缩后的文件映射回源代码中。
-* `sourceMap` 的配置项都是在`devtool` 中配置
+* `sourceMap` 的配置项都是在 `devtool` 中配置
 * `sourceMap` 对于打包后报错的文件提示和友好
 ``` js
 // webpack.config.js 
@@ -160,6 +166,8 @@ devtool:'cheap-module-eval-source-map',// 速度更快一些，开发环境下�
 
 devtool:'cheap-module-source-map',// 速度更快一些，生产环境下使用
 ```
+> 总结 source-map 可以将打包后的文件映射回源文件，对报错提示很友好，线上的开发环境采用`devtool: cheap-module-eval-source-map;` 线下采用：cheap-module-source-map。
+
 
 ## 9. webpack 之 resolve
 > `webpack` 启动后会在 `entry` 入口模块处找到所有依赖的文件，而`resolve`就是来约定好，如何找模块的文件的。这个配置项能够很好的筛选入口文件中的某些文件。
@@ -177,11 +185,12 @@ module.exports = {
 }
 ```
 > 这个属性不能滥用，对于图片文件，可以不使用这个配置项，因为都有可能图片。
+总结：resolve 属性用于筛选入口文件的配置项 entry，比如 extensions 属性就是用于筛选入口文件中匹配道的文件名后缀的。
 
 
 ## (重点) webpack 中的热更新原理 Hot Module Replacement 
 > HMR 允许在运行时添加，删除，替换各个模块，而不需要重新刷新整个页面。
-* `HMR`核心： 就是客服端从服务端获取更新后的文件。实际上就是本地的 `WDS(webpack-dev-server)` 和浏览器之间维护了一个 `Websocket`，当本地的资源发生变化时 `WDS` 会带上 `hash` 向浏览器推送更新，让浏览器和上次的资源对比。浏览器(客服端)对比差异后，向 `WDS` 发送 `ajax` 请求获取新的资源。实现热更新。
+* `HMR`核心： 就是客服端从服务端获取更新后的文件。实际上就是本地的 `WDS(webpack-dev-server)` 和浏览器之间维护了一个 `Websocket`，每次项目构建打包时都会产生一个 Hash 值，这个 hash 值就是热更新的标识，当本地的资源发生变化时 `WDS` 会带上 `hash` 向浏览器推送更新，让浏览器 hash 值做对比。浏览器(客服端)对比存在差异后，浏览器向 `WDS` 发送 `ajax` 请求获取新的资源。实现热更新。
 * 配置 `hot 和 hotOnly` 同时引入插件`webpack`，还需要在导出的出口文件中配置额外代码，让不同模块的文件互不干扰。
 ``` js
 // /src/index.js
@@ -204,29 +213,29 @@ module.exports = {
     ]
 }
 ```
-> 在 vue 中提供的 vue-loader 内部实现了`module.hot.access`，不需要我们自己添加
+> 在 vue 中提供的 vue-loader 内部实现了 `module.hot.access`，不需要我们自己添加
+总结：Hot modules replacement 热更新原理是指在运行时可以替换、删除、修改模块，但是不用刷新页面。原因是在于，每一项目构建时文件都会生成一个 hash 值，这个hash值热更新的标识，当文件资源被修改后会生成一个新的 hash 值，浏览器和本地的webpack-dev-Server之前形成一个 websocket 的协议，资源被修改后我们的 webpack-dev-server 会携带 hash值 向浏览器推送，浏览器对比hash值存在差异后，会向WDS发送请求获取新得资源，实现热更新
 
 
-
-## (重点) babel原理 ES6 转化成 ES5 
+## (重点) babel原理 ES6 转化成 ES5
 > 使用 babel 兼容浏览器环境
 * 安装 `npm install --save-dev babel-loader @babel/core`，添加 babel 的 loader。
-* 除了添加babel 之外还需要添加 `polyfill` 给浏览器补充不支持的语法。`npm install --save @babel/polyfill`，但是 `polyfill` 可能会导致变量的全局污染
-* 
+* 除了添加 babel 之外还需要添加 `polyfill` 给浏览器补充不支持的语法。`npm install --save @babel/polyfill`，但是 `polyfill` 可能会导致变量的全局污染
+
 ``` js
-module:{
+module: {
     rules: [{
-            test: /\.m?js$/,
-            exclude: /node_modules/,
-            use: {
-              loader: "babel-loader",
-              options: {
-                presets: ['@babel/preset-env',{
+        test: /\.m?js$/,
+        exclude: /node_modules/,
+        use: {
+            loader: "babel-loader",
+            options: {
+                presets: ['@babel/preset-env', {
                     useBuiltIns: 'usage'
-                }]  // presets 可以标识需要转换的源码使用了哪些新特性，
-              }
+                }] // presets 可以标识需要转换的源码使用了哪些新特性，
             }
-          }]
+        }
+    }]
 }
 ```
 
@@ -234,7 +243,6 @@ module:{
 ### 静态资源图片插件
 * `file-loader`: 提供很多的占位符，直接看官网文档
 * `url-loader`: 和 `file-loader` 相似，可以打包不同的图片
-
 
 
 ### html 
@@ -248,19 +256,20 @@ module:{
 
 ### CSS 样式的loader和插件
 > CSS文件引入到 `html` 模板文件内不会一起打包，因为 `html` 模板内的代码不会变化，也就不会将 CSS 文件打包，可以通过 `require()` 导入 css 文件结合 `webpack` 配置项 `module` 模块中的loader配置。 
-* `css-loader` 用于解析 `@import` 语法，内置多个配置项`model: true` 将css文件成为模块化
+* `css-loader` 用于解析 `@import` 语法，内置多个配置项 `model: true` 将css文件成为模块化
 * `style-loader`: 把解析打包后的文件插入到 `head` 标签中。
-* `less-loader`,将 less 语法转换成 css。
+* `less-loader`，将 less 语法转换成 css。
 * `postcss-loader`，用来给 css 样式做浏览器前缀 `webkit` 的配置
 * 插件：`mini-css-extract-plugin`，将写入 `style` 标签内的 css 抽离成一个 用 `link` 导入 生成的 CSS 文件，`MiniCssExtractPlugin.loader` 可以将抽离文件都导入到一个文件内
 * 插件：`optimize-css-assets-webpack-plugin` 对CSS 代码进行压缩。
+
 
 ### JS 插件
 
 
 ## Tree Shaking (webpack 优化)
 > Tree Shaking 在 webpack2.0 引入，为了解决导入模块时，不导入没有使用到的函数。去掉了实际上并没有使用的代码来减少包的大小。
-* Tree Shaking 只支持 `ES module` 的引入，即 `import from `，不支持 `commonJs` 的`require()`的导入，因为 Tree Shaking 只支持静态的映入方式。
+* Tree Shaking 只支持 `ES module` 的引入，即 `import from `，不支持 `commonJs` 的`require()`的导入，因为 Tree Shaking 只支持静态的引入方式。
 * Tree Shaking 开发环境 `mode: production` 下的的基本配置，同时还需要在 `package.json` 配置 `"sideEffects":false,`，`sideEffects:['a.css', 'b.css']` 可以在 `tree shaking` 打包的环境下忽略掉某个文件，在 webpack 打包的情况下都会去按照 `Tree Shaking` 的方式打包。
 ``` js
 //
@@ -307,7 +316,9 @@ module.exports = {
 
 Loader 本质就是一个函数，在该函数中对接收到的内容进行转换，返回转换后的结果。
 因为 Webpack 只认识 JavaScript，所以 Loader 就成了翻译官，对其他类型的资源进行转译的预处理工作。
+
 Plugin 就是插件，基于事件流框架 Tapable，插件可以扩展 Webpack 的功能，在 Webpack 运行的生命周期中会广播出许多事件，Plugin 可以监听这些事件，在合适的时机通过 Webpack 提供的 API 改变输出结果。
+
 Loader 在 module.rules 中配置，作为模块的解析规则，类型为数组。每一项都是一个 Object，内部包含了 test(类型文件)、loader、options (参数)等属性。
 Plugin 在 plugins 中单独配置，类型为数组，每一项是一个 Plugin 的实例，参数都通过构造函数传入。
 
